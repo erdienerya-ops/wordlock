@@ -1,0 +1,8 @@
+package com.wordlock.test;
+import android.app.*; import android.appwidget.*; import android.content.*; import android.widget.*;
+public class WordWidget extends AppWidgetProvider {
+static final String[][] WORDS={{"Discover","Keşfetmek"},{"Achieve","Başarmak"},{"Improve","Geliştirmek"},{"Embrace","Kucaklamak"},{"Courage","Cesaret"},{"Believe","İnanmak"},{"Journey","Yolculuk"},{"Hope","Umut"},{"Effort","Çaba"},{"Dream","Hayal"},{"Learn","Öğrenmek"},{"Peace","Huzur"},{"Kindness","Nezaket"},{"Focus","Odaklanmak"},{"Create","Yaratmak"},{"Trust","Güvenmek"},{"Wonder","Merak etmek"},{"Patience","Sabır"},{"Freedom","Özgürlük"},{"Opportunity","Fırsat"}};
+static void refresh(Context c,boolean next){android.content.SharedPreferences p=c.getSharedPreferences("words",0);int i=p.getInt("index",0);if(next){i=(i+1)%WORDS.length;p.edit().putInt("index",i).apply();}AppWidgetManager m=AppWidgetManager.getInstance(c);int[] ids=m.getAppWidgetIds(new ComponentName(c,WordWidget.class));for(int id:ids){RemoteViews r=new RemoteViews(c.getPackageName(),R.layout.word_widget);r.setTextViewText(R.id.english,WORDS[i][0]);r.setTextViewText(R.id.turkish,WORDS[i][1]);Intent in=new Intent(c,WordWidget.class).setAction("com.wordlock.NEXT");r.setOnClickPendingIntent(R.id.widget_root,PendingIntent.getBroadcast(c,0,in,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE));m.updateAppWidget(id,r);}}
+public void onUpdate(Context c,AppWidgetManager m,int[] ids){refresh(c,false);}
+public void onReceive(Context c,Intent i){super.onReceive(c,i);if("com.wordlock.NEXT".equals(i.getAction()))refresh(c,true);}
+}
